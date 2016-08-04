@@ -1,20 +1,18 @@
 package edu.ifpb.bd2.redis;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Jedis;
 
 public class MainTest {
-	
+
 	public static void main(String[] args) {
-		Set<HostAndPort> jedisClusterNodes = new HashSet<HostAndPort>();
-		//Jedis Cluster will attempt to discover cluster nodes automatically
-		jedisClusterNodes.add(new HostAndPort("127.0.0.1", 7379));
-		JedisCluster jc = new JedisCluster(jedisClusterNodes);
-		jc.set("foo", "bar");
-		String value = jc.get("foo");
+
+		Jedis jedis = new Jedis("192.168.56.102", 6379);
+		jedis.set("foo", "bar");
+		String value = jedis.get("foo");
+		
+		System.out.println(value);
+		
+
 	}
 
 }

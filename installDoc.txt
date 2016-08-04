@@ -1,0 +1,36 @@
+Instalação  REDIS utilizando cliente JAVA JEDIS com Máquina Virtual debian:
+
+Atualize os pacote do debian:
+
+sudo apt-get update
+
+Instale o seguinte pacote: sudo apt-get install build-essential
+ 
+ Instale mais esse pacote: sudo apt-get install tcl8.5
+ 
+depois de instalados os pacote baixe o Redis:
+
+wget http://download.redis.io/releases/redis-stable.tar.gz
+
+Após baixar, extraia com o seguinte comando: tar xzf redis-stable.tar.gz
+
+Feito isso entre dentro do diretório : cd redis-stable
+
+Para instalar de um make.
+
+Após instalar rode os teste por meio do make test
+
+Feito isso acesse cd utils no diretório baixado.
+
+execute : sudo ./install_server.sh
+
+
+Para rodar em máquina diferente você precisa mundar de 127.0.0.1 no arquivo .conf  e colocar 0.0.0.0
+
+
+
+Feito isso restart o REDIS
+
+
+  
+  
