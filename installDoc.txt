@@ -24,6 +24,8 @@ Feito isso acesse cd utils no diretório baixado.
 
 execute : sudo ./install_server.sh
 
+para mais detalhes:https://www.digitalocean.com/community/tutorials/how-to-install-and-use-redis
+
 
 Para rodar em máquina diferente você precisa mundar de 127.0.0.1 no arquivo .conf  e colocar 0.0.0.0
 
