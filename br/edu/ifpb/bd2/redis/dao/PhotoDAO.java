@@ -1,4 +1,4 @@
-package edu.ifpb.bd2.redis;
+package edu.ifpb.bd2.redis.dao;
 
 
 import edu.ifpb.bd2.redis.entities.Photo;

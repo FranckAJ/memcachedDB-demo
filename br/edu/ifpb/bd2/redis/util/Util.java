@@ -1,4 +1,4 @@
-package edu.ifpb.bd2.redis;
+package edu.ifpb.bd2.redis.util;
 
 import java.io.File;
 import java.io.FileDescriptor;
