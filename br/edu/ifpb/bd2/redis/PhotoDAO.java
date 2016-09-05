@@ -1,6 +1,8 @@
 package edu.ifpb.bd2.redis;
 
 
+import edu.ifpb.bd2.redis.entities.Photo;
+import edu.ifpb.bd2.redis.factory.ConnectionFactoryJedis;
 import redis.clients.jedis.Jedis;
 
 public class PhotoDAO {

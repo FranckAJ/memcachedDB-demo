@@ -1,4 +1,4 @@
-package edu.ifpb.bd2.redis;
+package edu.ifpb.bd2.redis.factory;
 
 import redis.clients.jedis.Jedis;
 
