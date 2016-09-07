@@ -9,21 +9,35 @@ import java.io.InputStream;
 
 public class Util {
 
-	private final static String DESTINO = "REDIS";
-	private final static String pathImages = System.getProperty("user.home") + "/" + DESTINO + "/";
-	private final static String home = System.getProperty("user.home");
+	private final static String DESTINO = "REDIS/FOTOS-REDIS";
+	private final static String ORIGEM = "REDIS/FOTOS";
+	private final static String PATH_IMAGEM = ORIGEM + "/";
+	
+	public static void createFolders(){
+		
+		File diretorio = new File(DESTINO);
+		File diretorio2 = new File(ORIGEM);
+
+		if (!diretorio.exists()) {
+			diretorio.mkdirs();
+		}
+		
+		if(!diretorio2.exists()){
+			diretorio2.mkdirs();
+		}
+	}
 
 	public static void bytesToImage(byte[] img, String key) {
 		byte[] imgBytes = img;
 		try {
 
-			File diretorio = new File(home, DESTINO);
+			File diretorio = new File(DESTINO);
 
 			if (!diretorio.exists()) {
 				diretorio.mkdirs();
 			}
 
-			FileOutputStream fos = new FileOutputStream(pathImages +"REDIS_"+key);
+			FileOutputStream fos = new FileOutputStream(PATH_IMAGEM +"REDIS_"+key);
 			fos.write(imgBytes);
 			FileDescriptor fd = fos.getFD();
 			fos.flush();
@@ -43,7 +57,7 @@ public class Util {
 	 */
 	public static byte[] imageToByte(String nome) throws IOException {
 
-		String image = pathImages + nome;
+		String image = PATH_IMAGEM + nome;
 
 		InputStream is = null;
 		byte[] buffer = null;

@@ -4,102 +4,99 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import edu.ifpb.bd2.redis.entities.Keys;
 import edu.ifpb.bd2.redis.entities.Photo;
 import edu.ifpb.bd2.redis.factory.ConnectionFactoryJedis;
-import edu.ifpb.bd2.redis.util.Tool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
 
+/**
+ * Classe que fornece operações de crud de photos.
+ * @author rafaelfeitosa
+ *
+ */
 public class PhotoDao {
 
-	public Photo savePhoto(Photo user){
-		
+	/**
+	 * Chave para acesso as fotos.
+	 */
+	private static final String KEY_PHOTOS = "comics";
+
+	
+	/**
+	 * Método que salva uma nova foto no agregado de fotos com key_photos específicada.
+	 * @param photo
+	 */
+	public void save(Photo photo) {
+		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
+		jedis.hset(KEY_PHOTOS.getBytes(), photo.getNome().getBytes(), photo.getImage());
+		ConnectionFactoryJedis.closeConnectionJedis(jedis);
+
+	}
+
+	/**
+	 * Método que salva um lista de fotos no agregado com key_photo específica.
+	 * @param photos
+	 */
+	public void savePhotoList(Map<byte[], byte[]> photos) {
+		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
+		jedis.hmset(KEY_PHOTOS.getBytes(), photos);
+		ConnectionFactoryJedis.closeConnectionJedis(jedis);
+	}
+
+	/**
+	 * Método que busca uma foto passando seu nome, no agregado da chave key_photos
+	 * @param photoName
+	 * @return
+	 */
+	public Photo find(String photoName) {
+
 		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
 
-		long photoId = jedis.incr(Keys.PHOTO_IDS.key());
-		user.setId(photoId);
-		
-		//Getting the Pipeline
+		byte[] photo = jedis.hget(KEY_PHOTOS.getBytes(), photoName.getBytes());
+
+		ConnectionFactoryJedis.closeConnectionJedis(jedis);
+
+		return new Photo(photoName, photo);
+	}
+
+	/**
+	 * Método que remove um field (nome da foto) do agregado com key_photos
+	 * @param photoName
+	 * @return
+	 */
+	public boolean remove(String photoName) {
+		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
+
 		Pipeline pipeline = jedis.pipelined();
-		//add to photos list
-		pipeline.lpush(Keys.PHOTO_ALL.key(), String.valueOf(photoId));
-		//add to the hash
-		
-		pipeline.hmset(Keys.PHOTO_DATA.formated(String.valueOf(photoId)), Tool.toMap(user));
-		
+		Response<Long> value = pipeline.hdel(KEY_PHOTOS, photoName);
 		pipeline.sync();
+		ConnectionFactoryJedis.closeConnectionJedis(jedis);
+
+		return value.get() > 0;
+
+	}
+
+
+	/**
+	 * Método que busca todas as fotos do agregado de key_photos.
+	 * @return
+	 */
+	public List<Photo> list() {
+		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
 		
-		return user;
-	}
-	
-	/**
-	 * 
-	 * @param photoId
-	 * @return
-	 */
-	public Photo getPhoto(long photoId){
-		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
+		List<Photo> photos = new ArrayList<>();
+		
+		Map<String, String> retrieveMap = jedis.hgetAll(KEY_PHOTOS);
+		Map<byte[], byte[]> listPhotos = jedis.hgetAll(KEY_PHOTOS.getBytes());
 
-		String userInfoKey = Keys.PHOTO_DATA.formated(String.valueOf(photoId));
-		Map<String, String> properties = jedis.hgetAll(userInfoKey);
-		return Tool.populate(properties, new Photo());
-	}
-	
-	/**
-	 * 
-	 * @param photoId
-	 * @return
-	 */
-	public boolean remove(long photoId){
-		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
-
-		String userInfoKey = Keys.PHOTO_DATA.formated(String.valueOf(photoId));
-		Pipeline pipeline = jedis.pipelined();
-		Response<Long> responseDel = pipeline.del(userInfoKey);
-		Response<Long> responseLrem = pipeline.lrem(Keys.PHOTO_ALL.key(), 0, String.valueOf(photoId));
-		pipeline.sync();
-		return responseDel.get() > 0 && responseLrem.get() > 0;
-	}
-	
-	/**
-	 * 
-	 * @param user
-	 * @return
-	 */
-	public Photo update(Photo photo){
-		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
-
-		String userInfoKey = Keys.PHOTO_ALL.formated(String.valueOf(photo.getId()));
-		jedis.hmset(userInfoKey,Tool.toMap(photo));
-		return photo;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public List<Photo> list(){
-		Jedis jedis = ConnectionFactoryJedis.createConnectionJedis();
-
-		List<Photo> photos = new ArrayList<Photo>();
-		//Get all user ids from the redis list using LRANGE
-		List<String> allphotoIds = jedis.lrange(Keys.PHOTO_ALL.key(), 0, -1);
-		if(allphotoIds != null && !allphotoIds.isEmpty()){
-			List<Response<Map<String,String>>> responseList = new ArrayList<Response<Map<String,String>>>();
-			
-			Pipeline pipeline = jedis.pipelined();
-			for(String photoId : allphotoIds){
-				//call HGETALL for each user id
-				responseList.add(pipeline.hgetAll(Keys.PHOTO_DATA.formated(photoId)));
-			}
-			pipeline.sync();
-			//iterate over the pipelined results
-			for(Response<Map<String, String>> properties : responseList){
-				photos.add(Tool.populate(properties.get(), new Photo()));
-			}
+		
+		for (String keyMap : retrieveMap.keySet()) {
+			photos.add(new Photo(keyMap , listPhotos.get(keyMap.getBytes())));
 		}
+		ConnectionFactoryJedis.closeConnectionJedis(jedis);
+
 		return photos;
-}
+	}
+
 }

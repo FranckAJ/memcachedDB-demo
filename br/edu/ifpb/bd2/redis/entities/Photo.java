@@ -4,16 +4,14 @@ import java.util.Arrays;
 
 public class Photo {
 
-	private long id;
 	private String nome;
 	private byte[] image;
 
 	public Photo() {
 	}
 
-	public Photo(long id, String nome, byte[] image) {
+	public Photo(String nome, byte[] image) {
 		super();
-		this.id = id;
 		this.nome = nome;
 		this.image = image;
 	}
@@ -34,19 +32,10 @@ public class Photo {
 		this.image = image;
 	}
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	@Override
 	public String toString() {
-		return "Photo [id=" + id + ", nome=" + nome + ", image=" + Arrays.toString(image) + "]";
+		return "Photo [nome=" + nome + ", image=" + Arrays.toString(image) + "]";
 	}
 
 	
-
 }
