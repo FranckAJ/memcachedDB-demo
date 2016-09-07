@@ -9,9 +9,11 @@ import java.io.InputStream;
 
 public class Util {
 
-	private final static String DESTINO = "REDIS/FOTOS-REDIS";
+	private final static String DESTINO = "REDIS/FOTOSREDIS";
 	private final static String ORIGEM = "REDIS/FOTOS";
-	private final static String PATH_IMAGEM = ORIGEM + "/";
+	private final static String PATH_IMAGEM_ORI = ORIGEM + "/";
+	private final static String PATH_IMAGEM_DEST = DESTINO + "/";
+
 	
 	public static void createFolders(){
 		
@@ -37,7 +39,7 @@ public class Util {
 				diretorio.mkdirs();
 			}
 
-			FileOutputStream fos = new FileOutputStream(PATH_IMAGEM +"REDIS_"+key);
+			FileOutputStream fos = new FileOutputStream(PATH_IMAGEM_DEST +"REDIS_"+key);
 			fos.write(imgBytes);
 			FileDescriptor fd = fos.getFD();
 			fos.flush();
@@ -57,7 +59,7 @@ public class Util {
 	 */
 	public static byte[] imageToByte(String nome) throws IOException {
 
-		String image = PATH_IMAGEM + nome;
+		String image = PATH_IMAGEM_ORI + nome;
 
 		InputStream is = null;
 		byte[] buffer = null;

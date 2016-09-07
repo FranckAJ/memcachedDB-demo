@@ -14,12 +14,10 @@ public class JedisConnectionPool {
 	
 	public JedisPool getJedisPool() {
 		jedisPool = new JedisPool(new JedisPoolConfig(), REDIS_HOST, REDIS_PORT);
-		System.out.println("Jedis Pool: " + jedisPool);
 		return jedisPool;
 	}
 
 	public void detroy(JedisPool jedisPool) {
-		System.out.println("Destruindo connexão :" + jedisPool);
 		jedisPool.destroy();
 	}
 }
